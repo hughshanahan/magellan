@@ -1,11 +1,11 @@
-
-
 # * Journey
+
 # 1. Authentication + API Session
 # 2. User inputs URL
 # 3. Run function x on Hugh's code 
 # 4. Refactor and add more documentation
 
+#! Dependencies that need to be installed using pip install (fire, inquirer, getkey)
 import fire
 import inquirer
 import os
