@@ -9,6 +9,7 @@
 import fire
 import inquirer
 import os
+from getkey import getkey
 import re
 
 def bye(name="World"):
@@ -18,12 +19,14 @@ def displayMenu():
   menu = [
   inquirer.List('choice',
                 message="Menu",
-                choices=['Info', 'Login', 'Exit'],
+                choices=['RELOAD_FOR_DEBUG', 'Info', 'Login', 'Exit'],
             ),
   ]
   return inquirer.prompt(menu)
 
-# TODO: implement regular expressions to validate input and add url query later
+# TODO: implement regular expressions to validate input
+# TODO: add url query
+
 def displayLogin():
   query = [
     inquirer.Text('username', message="Username"),
@@ -38,11 +41,18 @@ def displayLogin():
 # TODO: create and style info page
 # TODO: add instantaneous quit option (e.g. press space to quit)
 def displayInfo():
-  print('lorem ipsum ...')
+  print('lorem ipsum ...jjfkjads;fjdksa;ljf;kldsajf;dsajf;jd;fkj\n')
+  temp = True
+  print('Press Q to quit')
+  while temp:
+    key = getkey()
+    if key == 'q': temp = False
+
 
 
 if __name__ == '__main__':
   temp = True
+  reload = False
   while temp:
     os.system('clear')
     choice = displayMenu()['choice']
@@ -54,4 +64,9 @@ if __name__ == '__main__':
         fire.Fire(displayLogin)
       case 'Exit':
         temp = False
+      case 'RELOAD_FOR_DEBUG':
+        reload = True
+        temp = False
     os.system('clear')
+  if reload: os.system('python3 cli.py')
+
