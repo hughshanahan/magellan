@@ -31,18 +31,22 @@ def displayMenu():
   ]
   return inquirer.prompt(menu, theme=x)
 
-# TODO: implement regular expressions to validate input
-# TODO: figure out how to fix no backspace
-# TODO: add url query
+# TODO: implement validation for customerID and password
 def displayLogin():
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
-    # inquirer.Text('phone', message="What's your phone number",
-    #               validate=lambda _, x: re.match('\+?\d[\d ]+\d', x),
-    #             )
+    inquirer.Text('url', message="URL",validate=validate_url,),
   ]
   answer = inquirer.prompt(questions)
+
+# TODO: find working regular expression for url format
+def validate_url(answer, current):
+  uRe = 'x'
+  if not re.match(uRe, current):
+    raise inquirer.errors.ValidationError("", reason="ERROR: invalid URL format -> expected https://www.example.com")
+  
+  return True
   
 # - myConfig known components: zone, customer, password
 
