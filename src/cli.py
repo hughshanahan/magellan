@@ -14,7 +14,6 @@ from click import style
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
 from getkey import getkey 
 from yaspin import yaspin 
-import pyfiglet
 from pyfiglet import figlet_format
 from rich import print
 from rich.console import Console
@@ -33,15 +32,17 @@ f = open(file_path1)
 theme_data = json.load(f)
 customInq = inquirer.themes.load_theme_from_dict(theme_data)
 
-#
+# Import markdown file used in displayInfo()
 file_path2 = os.path.join(script_dir, 'info.md')
 f = open(file_path2, 'r')
 md = Markdown(f.read())
 f.close()
 
-""" Displays main menu
-
--> returns the user selection in dictionalry form (e.g. "choice" : "Info")
+""" 
+[D] DESCRIPTION | displays main menu
+[I] INPUT       |  
+[R] RETURNS     | user's choice
+[T] RETURN TYPE | dictionalry (e.g. "choice" : "Info")
 """
 def displayMenu():
   menu = [
