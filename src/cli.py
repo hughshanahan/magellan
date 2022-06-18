@@ -22,17 +22,17 @@ from rich.traceback import install
 from rich.markdown import Markdown
 
 
-install() #implements custom traceback styling || Rich
-console = Console() #creates new rich console || Rich
+install() #implements custom traceback styling || rich.traceback
+console = Console() #creates new rich console || rich.console
 
-# Provides styling options for the inquirer list menu
+# * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
 file_path1 = os.path.join(script_dir, 'inqTheme.json')
 f = open(file_path1)
 theme_data = json.load(f)
 customInq = inquirer.themes.load_theme_from_dict(theme_data)
 
-# Import markdown file used in displayInfo()
+# * Import markdown file used in displayInfo()
 file_path2 = os.path.join(script_dir, 'info.md')
 f = open(file_path2, 'r')
 md = Markdown(f.read())
@@ -65,7 +65,7 @@ def displayLogin():
     inquirer.Password('password', message="Password"),
     inquirer.Text('url', message="URL",validate=validate_url),
   ]
-  answer = inquirer.prompt(questions)
+  answer = inquirer.prompt(questions, theme=customInq)
 
 def validate_url(answer, current):
   """ 
@@ -95,9 +95,8 @@ def displayInfo():
   """ 
   [D] DESCRIPTION | displays the markdown file with all of the essential information
   """
-  console.print(figlet_format('fair data', font = 'isometric3'), style="bold green")
+  console.print(figlet_format('fair data', font = 'isometric3'), style="bold yellow")
   console.print(md)
-
   exitPage()
   
 
@@ -105,7 +104,11 @@ def exitPage():
   """ 
   [D] DESCRIPTION | a widget to allow user to exit a page
   """
-  print('\nPress Q to return back to the Menu: ')
+
+  qText = Text('\n\nPress Q to return back to the Menu: ')
+  qText.stylize("bold green", 0, 9)
+  console.print(qText)
+
   key = ''
   while key != 'q':
     key = getkey().lower()

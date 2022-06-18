@@ -1,7 +1,7 @@
 {
     "Question": {
-        "mark_color": "purple",
-        "brackets_color": "normal"
+        "mark_color": "green",
+        "brackets_color": "purple"
     },
     "List": {
         "selection_color": "purple",
