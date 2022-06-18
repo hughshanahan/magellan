@@ -22,10 +22,10 @@ from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
 
+
 install() #implements custom traceback styling || Rich
 console = Console() #creates new rich console || Rich
 
-# TODO: fix below path not being universalq
 # Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
 file_path1 = os.path.join(script_dir, 'inqTheme.json')
@@ -33,6 +33,7 @@ f = open(file_path1)
 theme_data = json.load(f)
 customInq = inquirer.themes.load_theme_from_dict(theme_data)
 
+#
 file_path2 = os.path.join(script_dir, 'info.md')
 f = open(file_path2, 'r')
 md = Markdown(f.read())
@@ -56,14 +57,20 @@ def displayLogin():
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
-    inquirer.Text('url', message="URL",validate=validate_url,),
+    inquirer.Text('url', message="URL",validate=validate_url),
   ]
   answer = inquirer.prompt(questions)
 
-# TODO: find working regular expression for url format
 def validate_url(answer, current):
-  uRe = 'x'
-  if not re.match(uRe, current):
+  regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+  if not re.match(regex, current):
     raise inquirer.errors.ValidationError("", reason='ERROR: invalid URL format -> expected https://www.example.com')
   
   return True
