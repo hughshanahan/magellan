@@ -1,27 +1,36 @@
+
 # * Journey
 # 1. Authentication + API Session
 # 2. User inputs URL
 # 3. Run function x on Hugh's code 
 # 4. Refactor and add more documentation
 
-#! Dependencies that need to be installed using pip install (fire, inquirer, getkey)
-
-import inquirer #! (v2.8.0, as of yet no fix for backpace input error)
 import json
 import os
-from getkey import getkey
 import re
+
+#? Dependencies that need to be installed using pip install
+import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
+from getkey import getkey
 import fire
+
 
 def bye(name="World"):
   return "Bye %s!" % name
 
-# Custom theme for the inquirer
+""" Custom theme for the inquirer
+
+# Provides styling options for the inquirer list menu
+"""
 f = open('inqTheme.json')
 data = json.load(f)
 f.close()
 x = inquirer.themes.load_theme_from_dict(data)
 
+""" Displays main menu
+
+-> returns the user selection in dictionalry form (e.g. "choice" : "Info")
+"""
 def displayMenu():
   menu = [
   inquirer.List('choice',
