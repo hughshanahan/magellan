@@ -5,13 +5,13 @@
 # 4. Refactor and add more documentation
 
 #! Dependencies that need to be installed using pip install (fire, inquirer, getkey)
-import fire
-import inquirer
+
+import inquirer #! (v2.8.0, as of yet no fix for backpace input error)
 import json
-from inquirer.themes import GreenPassion
 import os
 from getkey import getkey
 import re
+import fire
 
 def bye(name="World"):
   return "Bye %s!" % name
@@ -32,6 +32,7 @@ def displayMenu():
   return inquirer.prompt(menu, theme=x)
 
 # TODO: implement regular expressions to validate input
+# TODO: figure out how to fix no backspace
 # TODO: add url query
 def displayLogin():
   questions = [
