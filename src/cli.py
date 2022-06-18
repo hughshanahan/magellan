@@ -9,6 +9,8 @@ import json
 import os
 import re
 from click import style
+import sys
+import ssl
 
 #? Dependencies that need to be installed using pip install
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
@@ -58,15 +60,34 @@ def displayLogin():
   """ 
   [D] DESCRIPTION | displays login promt to the user
   [R] RETURNS     | user's answers to the 3 queries
-  [T] RETURN TYPE | dictionalry (e.g. "url" : "https://www.google.com")
+  [T] RETURN TYPE | dictionary (e.g. "url" : "https://www.google.com")
   """
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
     inquirer.Text('url', message="URL",validate=validate_url),
   ]
-  answer = inquirer.prompt(questions, theme=customInq)
+  answer = inquirer.prompt(questions, theme=customInq)  
 
+# * Auth for BrightData proxy service 
+  if sys.version_info[0]==3:
+    import urllib.request
+    import random
+    username = answer['accountID']   
+    password = answer['password']
+    port = 22225
+    session_id = random.random()
+    super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
+        (username, session_id, password, port))
+    proxy_handler = urllib.request.ProxyHandler({
+        'http': super_proxy_url,
+        'https': super_proxy_url,
+    })
+    opener = urllib.request.build_opener(proxy_handler)
+    print('Performing request')
+    print(opener.open(answer['url']).read())
+
+    
 def validate_url(answer, current):
   """ 
   [D] DESCRIPTION | validates the url
@@ -131,12 +152,11 @@ if __name__ == '__main__':
         displayInfo()
       case 'Login':
         displayLogin()
+        
       case 'Exit':
         temp = False
       case 'RELOAD_FOR_DEBUG':
         reload = True
         temp = False
-    os.system('clear')
 
   if reload: os.system('python3 ~/Develop/pythonCLI/src/cli.py')
-
