@@ -1,0 +1,11 @@
+{
+    "Question": {
+        "mark_color": "purple",
+        "brackets_color": "normal"
+    },
+    "List": {
+        "selection_color": "purple",
+        "selection_cursor": "❯",
+        "unselected_color": "white"
+    }
+}

@@ -1,5 +1,4 @@
 # * Journey
-
 # 1. Authentication + API Session
 # 2. User inputs URL
 # 3. Run function x on Hugh's code 
@@ -8,6 +7,8 @@
 #! Dependencies that need to be installed using pip install (fire, inquirer, getkey)
 import fire
 import inquirer
+import json
+from inquirer.themes import GreenPassion
 import os
 from getkey import getkey
 import re
@@ -15,27 +16,34 @@ import re
 def bye(name="World"):
   return "Bye %s!" % name
 
+# Custom theme for the inquirer
+f = open('inqTheme.json')
+data = json.load(f)
+f.close()
+x = inquirer.themes.load_theme_from_dict(data)
+
 def displayMenu():
   menu = [
   inquirer.List('choice',
-                message="Menu",
+                message="MENU",
                 choices=['RELOAD_FOR_DEBUG', 'Info', 'Login', 'Exit'],
             ),
   ]
-  return inquirer.prompt(menu)
+  return inquirer.prompt(menu, theme=x)
 
 # TODO: implement regular expressions to validate input
 # TODO: add url query
 def displayLogin():
-  query = [
-    inquirer.Text('username', message="Username"),
+  questions = [
+    inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
     # inquirer.Text('phone', message="What's your phone number",
     #               validate=lambda _, x: re.match('\+?\d[\d ]+\d', x),
     #             )
   ]
-  answers = inquirer.prompt(query)
+  answer = inquirer.prompt(questions)
   
+# - myConfig known components: zone, customer, password
 
 # TODO: create and style info page
 def displayInfo():
@@ -51,20 +59,23 @@ def displayInfo():
 if __name__ == '__main__':
   temp = True
   reload = False
+
   while temp:
     os.system('clear')
     choice = displayMenu()['choice']
     os.system('clear')
+    
     match choice:
       case 'Info':
-        fire.Fire(displayInfo)
+        displayInfo()
       case 'Login':
-        fire.Fire(displayLogin)
+        displayLogin()
       case 'Exit':
         temp = False
       case 'RELOAD_FOR_DEBUG':
         reload = True
         temp = False
     os.system('clear')
-  if reload: os.system('python3 cli.py')
+
+  if reload: os.system('python3 ~/Develop/pythonCLI/cli.py')
 
