@@ -38,13 +38,13 @@ f = open(file_path2, 'r')
 md = Markdown(f.read())
 f.close()
 
-""" 
-[D] DESCRIPTION | displays main menu
-[I] INPUT       |  
-[R] RETURNS     | user's choice
-[T] RETURN TYPE | dictionalry (e.g. "choice" : "Info")
-"""
+
 def displayMenu():
+  """ 
+  [D] DESCRIPTION | displays main menu 
+  [R] RETURNS     | user's choice
+  [T] RETURN TYPE | dictionalry (e.g. "choice" : "Info")
+  """
   menu = [
   inquirer.List('choice',
                 message="MENU",
@@ -55,6 +55,11 @@ def displayMenu():
 
 # TODO: implement validation for customerID and password
 def displayLogin():
+  """ 
+  [D] DESCRIPTION | displays login promt to the user
+  [R] RETURNS     | user's answers to the 3 queries
+  [T] RETURN TYPE | dictionalry (e.g. "url" : "https://www.google.com")
+  """
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
@@ -63,6 +68,13 @@ def displayLogin():
   answer = inquirer.prompt(questions)
 
 def validate_url(answer, current):
+  """ 
+  [D] DESCRIPTION | validates the url
+  [I] INPUT       | { answer: dictionary containing pervious user input } 
+                    { current: string that represents user input i.e. url }
+  [R] RETURNS     | True if input is valid, else raises exception
+  [T] RETURN TYPE | boolean / exception
+  """
   regex = re.compile(
         r'^(?:http|ftp)s?://' # http:// or https://
         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -80,10 +92,19 @@ def validate_url(answer, current):
 
 # TODO: create and style info page
 def displayInfo():
+  """ 
+  [D] DESCRIPTION | displays the markdown file with all of the essential information
+  """
   console.print(figlet_format('fair data', font = 'isometric3'), style="bold green")
   console.print(md)
+
+  exitPage()
   
-  # Exit info page
+
+def exitPage():
+  """ 
+  [D] DESCRIPTION | a widget to allow user to exit a page
+  """
   print('\nPress Q to return back to the Menu: ')
   key = ''
   while key != 'q':
@@ -97,12 +118,11 @@ if __name__ == '__main__':
   os.system('clear')
   displayInfo()
   os.system('clear')
-  print('wagwan')
+
   while temp:
-    os.system('clear')
     choice = displayMenu()['choice']
-    os.system('clear')
     
+    os.system('clear')
     match choice:
       case 'Info':
         displayInfo()
