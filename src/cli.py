@@ -8,13 +8,16 @@
 import json
 import os
 import re
+from xmlrpc.client import boolean
 from click import style
 import sys
 import ssl
 
 #? Dependencies that need to be installed using pip install
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
-from getkey import getkey 
+import iso3166
+from getkey import getkey
+from numpy import void 
 from yaspin import yaspin 
 from pyfiglet import figlet_format
 from rich import print
@@ -23,13 +26,16 @@ from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
 
+# global variables
+# customerID = 'lum-customer-c_0abac4c6-zone-unblocker'
+# password = 'u6lk0tgc5mfo'
 
 install() #implements custom traceback styling || rich.traceback
 console = Console() #creates new rich console || rich.console
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
-file_path1 = os.path.join(script_dir, 'inqTheme.json')
+file_path1 = os.path.join(script_dir, 'inqTheme.json') 
 f = open(file_path1)
 theme_data = json.load(f)
 customInq = inquirer.themes.load_theme_from_dict(theme_data)
@@ -39,6 +45,45 @@ file_path2 = os.path.join(script_dir, 'info.md')
 f = open(file_path2, 'r')
 md = Markdown(f.read())
 f.close()
+
+
+
+def requestURL(url):
+  """ 
+  [D] DESCRIPTION | requests the url and returns the response
+  """
+
+  countries = []
+  for c in iso3166.countries_by_alpha2.keys():
+    countries.append(c.lower())
+
+  for c in countries:
+      print("Starting run on " + c)
+      # runCountry(c,path)
+      print("Finished run on " + c)
+      # doneCountries.append(c)
+      # updateDoneCountries(doneCountries)
+      print('you have requested url ' + url)
+      print(customerID + ' ' + password)
+
+  # # * Auth for BrightData proxy service 
+  # if sys.version_info[0]==3:
+  #   import urllib.request
+  #   import random
+  #   username = customerID 
+  #   password = password
+  #   port = 22225
+  #   session_id = random.random()
+  #   super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
+  #       (username, session_id, password, port))
+  #   proxy_handler = urllib.request.ProxyHandler({
+  #       'http': super_proxy_url,
+  #       'https': super_proxy_url,
+  #   })
+  #   opener = urllib.request.build_opener(proxy_handler)
+  #   print('Performing request')
+  #   print(opener.open(url).read())
+
 
 
 def displayMenu():
@@ -55,6 +100,8 @@ def displayMenu():
   ]
   return inquirer.prompt(menu, theme=customInq)
 
+
+
 # TODO: implement validation for customerID and password
 def displayLogin():
   """ 
@@ -68,26 +115,14 @@ def displayLogin():
     inquirer.Text('url', message="URL",validate=validate_url),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
+  global customerID, password 
+  customerID= answer['accountID']
+  password = answer['password']
 
-# * Auth for BrightData proxy service 
-  if sys.version_info[0]==3:
-    import urllib.request
-    import random
-    username = answer['accountID']   
-    password = answer['password']
-    port = 22225
-    session_id = random.random()
-    super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
-        (username, session_id, password, port))
-    proxy_handler = urllib.request.ProxyHandler({
-        'http': super_proxy_url,
-        'https': super_proxy_url,
-    })
-    opener = urllib.request.build_opener(proxy_handler)
-    print('Performing request')
-    print(opener.open(answer['url']).read())
+  requestURL(answer['url'])
 
     
+
 def validate_url(answer, current):
   """ 
   [D] DESCRIPTION | validates the url
@@ -121,6 +156,7 @@ def displayInfo():
   exitPage()
   
 
+
 def exitPage():
   """ 
   [D] DESCRIPTION | a widget to allow user to exit a page
@@ -135,18 +171,19 @@ def exitPage():
     key = getkey().lower()
 
 
+
 if __name__ == '__main__':
   temp = True
   reload = False
 
-  os.system('clear')
+  # os.system('clear')
   displayInfo()
-  os.system('clear')
+  # os.system('clear')
 
   while temp:
     choice = displayMenu()['choice']
     
-    os.system('clear')
+    # os.system('clear')
     match choice:
       case 'Info':
         displayInfo()
