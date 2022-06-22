@@ -138,11 +138,10 @@ def validate_user():
   """ 
   [D] DESCRIPTION | validates the user's credentials
   """
-  global validUser
+  global isValidUser
   isValidUser = False
 
-  if testURL('http://www.youtube.com'):
-    isValidUser = True
+  isValidUser =  testURL('http://www.youtube.com')
 
   print(isValidUser)
   input()
