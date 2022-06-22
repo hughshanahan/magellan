@@ -17,7 +17,8 @@ import ssl
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
 import iso3166
 from getkey import getkey
-from numpy import void 
+from numpy import void
+import requests 
 from yaspin import yaspin 
 from pyfiglet import figlet_format
 from rich import print
@@ -26,12 +27,11 @@ from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
 
-# global variables
-# customerID = 'lum-customer-c_0abac4c6-zone-unblocker'
-# password = 'u6lk0tgc5mfo'
+# lum-customer-c_0abac4c6-zone-unblocker
+# u6lk0tgc5mfo
 
-install() #implements custom traceback styling || rich.traceback
-console = Console() #creates new rich console || rich.console
+install() # implements custom traceback styling || rich.traceback
+console = Console() # creates new rich console || rich.console
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
@@ -64,26 +64,7 @@ def requestURL(url):
       # doneCountries.append(c)
       # updateDoneCountries(doneCountries)
       print('you have requested url ' + url)
-      print(customerID + ' ' + password)
-
-  # # * Auth for BrightData proxy service 
-  # if sys.version_info[0]==3:
-  #   import urllib.request
-  #   import random
-  #   username = customerID 
-  #   password = password
-  #   port = 22225
-  #   session_id = random.random()
-  #   super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
-  #       (username, session_id, password, port))
-  #   proxy_handler = urllib.request.ProxyHandler({
-  #       'http': super_proxy_url,
-  #       'https': super_proxy_url,
-  #   })
-  #   opener = urllib.request.build_opener(proxy_handler)
-  #   print('Performing request')
-  #   print(opener.open(url).read())
-
+      print(customerID + ' ' + pswrd)
 
 
 def displayMenu():
@@ -92,6 +73,7 @@ def displayMenu():
   [R] RETURNS     | user's choice
   [T] RETURN TYPE | dictionalry (e.g. "choice" : "Info")
   """
+
   menu = [
   inquirer.List('choice',
                 message="MENU",
@@ -109,19 +91,64 @@ def displayLogin():
   [R] RETURNS     | user's answers to the 3 queries
   [T] RETURN TYPE | dictionary (e.g. "url" : "https://www.google.com")
   """
+
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
     inquirer.Text('url', message="URL",validate=validate_url),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
-  global customerID, password 
+  
+  global customerID, pswrd 
   customerID= answer['accountID']
-  password = answer['password']
+  pswrd = answer['password']
 
-  requestURL(answer['url'])
+  validate_user()
 
-    
+  # requestURL(answer['url'])
+
+def testURL(url):
+    # * Auth for BrightData proxy service 
+  if sys.version_info[0]==3:
+    import urllib.request
+    import random
+    username = customerID 
+    password = pswrd
+    port = 22225
+    session_id = random.random()
+    super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
+        (username, session_id, password, port))
+
+    proxy_handler = urllib.request.ProxyHandler({
+        'http': super_proxy_url,
+        'https': super_proxy_url,
+    })
+    opener = urllib.request.build_opener(proxy_handler)
+    print('Performing request')
+    try:
+      opener.open(url).read()
+    except urllib.request.HTTPError as e:
+      return False
+
+    return True
+
+
+
+def validate_user():
+  """ 
+  [D] DESCRIPTION | validates the user's credentials
+  """
+  global validUser
+  isValidUser = False
+
+  if testURL('http://www.youtube.com'):
+    isValidUser = True
+
+  print(isValidUser)
+  input()
+  return isValidUser
+
+
 
 def validate_url(answer, current):
   """ 
@@ -131,6 +158,7 @@ def validate_url(answer, current):
   [R] RETURNS     | True if input is valid, else raises exception
   [T] RETURN TYPE | boolean / exception
   """
+
   regex = re.compile(
         r'^(?:http|ftp)s?://' # http:// or https://
         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -151,6 +179,7 @@ def displayInfo():
   """ 
   [D] DESCRIPTION | displays the markdown file with all of the essential information
   """
+
   console.print(figlet_format('fair data', font = 'isometric3'), style="bold yellow")
   console.print(md)
   exitPage()
@@ -177,13 +206,14 @@ if __name__ == '__main__':
   reload = False
 
   # os.system('clear')
-  displayInfo()
+# displayInfo()~
   # os.system('clear')
 
   while temp:
+    os.system('clear')
     choice = displayMenu()['choice']
+    os.system('clear')
     
-    # os.system('clear')
     match choice:
       case 'Info':
         displayInfo()
