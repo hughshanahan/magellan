@@ -8,7 +8,6 @@
 import json
 import os
 import re
-from xmlrpc.client import boolean
 from click import style
 import sys
 import ssl
@@ -64,7 +63,8 @@ def requestURL(url):
       # doneCountries.append(c)
       # updateDoneCountries(doneCountries)
       print('you have requested url ' + url)
-      print(customerID + ' ' + pswrd)
+      # print(customerID + ' ' + pswrd)
+
 
 
 def displayMenu():
@@ -95,25 +95,35 @@ def displayLogin():
   questions = [
     inquirer.Text('accountID', message="CustomerID"),
     inquirer.Password('password', message="Password"),
-    inquirer.Text('url', message="URL",validate=validate_url),
+    # inquirer.Text('url', message="URL",validate=validate_url),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
-  
-  global customerID, pswrd 
-  customerID= answer['accountID']
-  pswrd = answer['password']
 
-  validate_user()
+  if validate_user(answer['accountID'], answer['password']):
+    print('hello')
+    global CID, PSWRD
+    CID = answer['accountID']
+    PSWRD = answer['password']
+  else: 
+    print('bye')
+  input()
 
   # requestURL(answer['url'])
 
-def testURL(url):
-    # * Auth for BrightData proxy service 
+def validate_user(customerID, password):
+  """ 
+  [D] DESCRIPTION | validates the user's credentials
+  [I] INPUT       | { customerID: string containing user's customerID }
+                    { password: string containing user's password }
+  [R] RETURNS     | True if user's credentials are valid, else False
+  [T] RETURN TYPE | boolean
+  """
+  # * Auth for BrightData proxy service 
   if sys.version_info[0]==3:
     import urllib.request
     import random
     username = customerID 
-    password = pswrd
+    password = password
     port = 22225
     session_id = random.random()
     super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
@@ -126,26 +136,17 @@ def testURL(url):
     opener = urllib.request.build_opener(proxy_handler)
     print('Performing request')
     try:
-      opener.open(url).read()
+      opener.open('http://youtube.com').read()
     except urllib.request.HTTPError as e:
+      match e.code:
+        case 401:
+          print('blacklisted_ip')
+        case 407:
+          print('wrong_credentials')
+      print(e)
       return False
 
     return True
-
-
-
-def validate_user():
-  """ 
-  [D] DESCRIPTION | validates the user's credentials
-  """
-  global isValidUser
-  isValidUser = False
-
-  isValidUser =  testURL('http://www.youtube.com')
-
-  print(isValidUser)
-  input()
-  return isValidUser
 
 
 
@@ -205,7 +206,7 @@ if __name__ == '__main__':
   reload = False
 
   # os.system('clear')
-# displayInfo()~
+  # displayInfo()
   # os.system('clear')
 
   while temp:
