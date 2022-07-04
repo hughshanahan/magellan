@@ -7,29 +7,29 @@
 
 # TODO: adding content to the info page
 # TODO: adding styling to the info page
-# TODO: generating a result json file after a successfull request
-# TODO: adding loading during the run through all countries
 # TODO: figuring out how to resolve different error codes while logging in
 
 
 import json
 import os
 import re
-# from click import style
 import requests as r
+from datetime import datetime
 
 #? Dependencies that need to be installed using pip install
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
 import iso3166
 from getkey import getkey
 from yaspin import yaspin 
+from yaspin.spinners import Spinners
 from pyfiglet import figlet_format
 from rich import print
 from rich.console import Console
 from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
-from datetime import datetime
+from rich.table import Table
+
 
 # ! Credentials for BrightData proxy service (temporary)
 # lum-customer-c_0abac4c6-zone-static
@@ -61,6 +61,12 @@ f.close()
 """
 def requestURL(url):
   countries = []
+  table = Table()
+
+  table.add_column("Code", style="cyan", no_wrap=True)
+  table.add_column("Country", style="magenta")
+  table.add_column("Status", justify="right", style="blue")
+  table.add_column("Description", style="red")
 
   for c in iso3166.countries_by_alpha2.keys():
     countries.append(c.lower())
@@ -73,22 +79,24 @@ def requestURL(url):
   requestPath = os.path.join('responses', requestTime)
   os.mkdir(requestPath)
 
+  counter = 1
+  with yaspin(Spinners.earth, text='Loading...', color='yellow') as spinner:
+    for c in countries:
+      country_full = iso3166.countries_by_alpha2[c.upper()].name
+      spinner.text = f'[{counter}/{len(countries)}]  Loading ' + c.upper() + '...'
 
-  # for c in countries:
-  # r.runCountry(url, 'us')
+      try:
+        data_dict = r.runCountry(url, c, requestPath)
+        status_code = data_dict['status_code']
+        table.add_row(c.upper(), country_full, f"{status_code} ✅")
+      except Exception as e:
+        description = str(e.args[0])
+        table.add_row(c.upper(), country_full, "Failed ❌", description)
 
-  # with yaspin(text='Loading...', color='yellow') as spinner:
-  #   for c in countries:
-  #     spinner.text = 'Loading ' + c
-  #     r.runCountry(url, c)
-  #   #   print("Starting run on " + c)
-  #   # # runCountry(c,path)
-  #   # print("Finished run on " + c)
-  #   # # doneCountries.append(c)
-  #   # # updateDoneCountries(doneCountries)
-  #   # print('you have requested url ' + url)
-  #   # print(customerID + ' ' + pswrd)
-  #   spinner.stop()
+      counter+=1
+    spinner.stop()
+
+  console.print(table)
   input()
 
 
