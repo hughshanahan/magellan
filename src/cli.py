@@ -5,6 +5,13 @@
 # 3. Run function x on Hugh's code 
 # 4. Refactor and add more documentation
 
+# TODO: adding content to the info page
+# TODO: adding styling to the info page
+# TODO: generating a result json file after a successfull request
+# TODO: adding loading during the run through all countries
+# TODO: figuring out how to resolve different error codes while logging in
+
+
 import json
 import os
 import re
@@ -23,13 +30,14 @@ from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
 
-# * Credentials for BrightData proxy service
-# lum-customer-c_0abac4c6-zone-unblocker
-# u6lk0tgc5mfo
+# ! Credentials for BrightData proxy service (temporary)
+# lum-customer-c_0abac4c6-zone-static
+# 2s7c5n20jxn5
 
 install() # implements custom traceback styling || rich.traceback
 console = Console() # creates new rich console || rich.console
-isLogedIn = False
+
+isLogedIn = True # global boolean to check if user is logged in
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
@@ -52,19 +60,72 @@ f.close()
 """
 def requestURL(url):
   countries = []
+
   for c in iso3166.countries_by_alpha2.keys():
     countries.append(c.lower())
+  countries.sort()
 
-  for c in countries:
-      print("Starting run on " + c)
-      # runCountry(c,path)
-      print("Finished run on " + c)
-      # doneCountries.append(c)
-      # updateDoneCountries(doneCountries)
-      print('you have requested url ' + url)
-      # print(customerID + ' ' + pswrd)
+  runCountry(url, countries[0])
+
+  # with yaspin(text='Loading...', color='yellow') as spinner:
+  #   for c in countries:
+  #     spinner.text = 'Loading ' + c
+  #     runCountry(url, c)
+  #   #   print("Starting run on " + c)
+  #   # # runCountry(c,path)
+  #   # print("Finished run on " + c)
+  #   # # doneCountries.append(c)
+  #   # # updateDoneCountries(doneCountries)
+  #   # print('you have requested url ' + url)
+  #   # print(customerID + ' ' + pswrd)
+  #   spinner.stop()
+
+  input()
+
+def runCountry(url, country):
+  doneCountries = []
+  url='https://youtube.com'
+  if sys.version_info[0]==3:
+      import urllib.request
+      import random
+      username = 'lum-customer-c_0abac4c6-zone-static'
+      password = '2s7c5n20jxn5'
+      port = 22225
+      session_id = random.random()
+      super_proxy_url = ('http://%s-country-%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
+          (username, country, session_id, password, port))
+      proxy_handler = urllib.request.ProxyHandler({
+          'http': super_proxy_url,
+          'https': super_proxy_url,
+      })
 
 
+      try:
+        opener = urllib.request.build_opener(proxy_handler)
+        r = opener.open(url)
+        header_info = r.getheaders()
+
+        status_code = r.getcode()
+        dct = dict((x, y) for x, y in header_info)
+
+        somedict = { 
+          "url": r.url,
+          "status_code": status_code,
+          "headers": dct,
+          "text": r.read().decode('utf-8')
+        }
+
+        with open(f"{country}.json", "w") as outfile:
+          json.dump(somedict, outfile)
+
+      except Exception as e:
+        print(e)
+
+    # print("Starting run on " + country)
+    # runCountry(country,url)
+    # print("Finished run on " + country)
+    # doneCountries.append(country)
+    # print('you have requested url ' + url)
 
 """ 
 [D] DESCRIPTION | displays main menu 
@@ -90,7 +151,9 @@ def displayMenu(choices):
 """
 def displayRequest():
   questions = [
-    inquirer.Text('url', message="URL",validate=validate_url),
+    inquirer.Text('url', message="URL",
+    # validate=validate_url
+    ),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
 
@@ -115,9 +178,6 @@ def displayLogin():
   if validate_user(answer['accountID'], answer['password']):
     print('Logging In...')
     isLogedIn = True
-    # global CID, PSWRD
-    # CID = answer['accountID']
-    # PSWRD = answer['password']
   else: 
     print('Failed to Log in')
   input() # ! pause for user to read
@@ -157,9 +217,11 @@ def validate_user(customerID, password):
       #     print('blacklisted_ip')
       #   case 407:
       #     print('wrong_credentials')
-      # print(e)
+      print(e)
       return False
-
+    global cid, psw
+    cid = customerID
+    psw = password
     return True
 
 
@@ -187,7 +249,6 @@ def validate_url(answer, current):
   
 # - myConfig known components: zone, customer, password
 
-# TODO: create and style info page
 """ 
 [D] DESCRIPTION | displays the markdown file with all of the essential information
 """
