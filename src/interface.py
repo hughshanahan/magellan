@@ -15,8 +15,8 @@
 import json
 import os
 import re
-from click import style
-import sys
+# from click import style
+import requests as r
 
 #? Dependencies that need to be installed using pip install
 import inquirer #! (v2.8.0, as of yet no fix for backspace input error)
@@ -29,6 +29,7 @@ from rich.console import Console
 from rich.text import Text
 from rich.traceback import install
 from rich.markdown import Markdown
+from datetime import datetime
 
 # ! Credentials for BrightData proxy service (temporary)
 # lum-customer-c_0abac4c6-zone-static
@@ -65,12 +66,21 @@ def requestURL(url):
     countries.append(c.lower())
   countries.sort()
 
-  runCountry(url, countries[0])
+  if not os.path.exists('responses'):
+    os.mkdir('responses')
+
+  requestTime = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
+  requestPath = os.path.join('responses', requestTime)
+  os.mkdir(requestPath)
+
+
+  # for c in countries:
+  # r.runCountry(url, 'us')
 
   # with yaspin(text='Loading...', color='yellow') as spinner:
   #   for c in countries:
   #     spinner.text = 'Loading ' + c
-  #     runCountry(url, c)
+  #     r.runCountry(url, c)
   #   #   print("Starting run on " + c)
   #   # # runCountry(c,path)
   #   # print("Finished run on " + c)
@@ -79,53 +89,9 @@ def requestURL(url):
   #   # print('you have requested url ' + url)
   #   # print(customerID + ' ' + pswrd)
   #   spinner.stop()
-
   input()
 
-def runCountry(url, country):
-  doneCountries = []
-  url='https://youtube.com'
-  if sys.version_info[0]==3:
-      import urllib.request
-      import random
-      username = 'lum-customer-c_0abac4c6-zone-static'
-      password = '2s7c5n20jxn5'
-      port = 22225
-      session_id = random.random()
-      super_proxy_url = ('http://%s-country-%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
-          (username, country, session_id, password, port))
-      proxy_handler = urllib.request.ProxyHandler({
-          'http': super_proxy_url,
-          'https': super_proxy_url,
-      })
 
-
-      try:
-        opener = urllib.request.build_opener(proxy_handler)
-        r = opener.open(url)
-        header_info = r.getheaders()
-
-        status_code = r.getcode()
-        dct = dict((x, y) for x, y in header_info)
-
-        somedict = { 
-          "url": r.url,
-          "status_code": status_code,
-          "headers": dct,
-          "text": r.read().decode('utf-8')
-        }
-
-        with open(f"{country}.json", "w") as outfile:
-          json.dump(somedict, outfile)
-
-      except Exception as e:
-        print(e)
-
-    # print("Starting run on " + country)
-    # runCountry(country,url)
-    # print("Finished run on " + country)
-    # doneCountries.append(country)
-    # print('you have requested url ' + url)
 
 """ 
 [D] DESCRIPTION | displays main menu 
@@ -152,7 +118,7 @@ def displayMenu(choices):
 def displayRequest():
   questions = [
     inquirer.Text('url', message="URL",
-    # validate=validate_url
+    # validate=validate_url # ! temporary
     ),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
@@ -175,54 +141,12 @@ def displayLogin():
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
 
-  if validate_user(answer['accountID'], answer['password']):
+  if r.validate_user(answer['accountID'], answer['password']):
     print('Logging In...')
     isLogedIn = True
   else: 
     print('Failed to Log in')
   input() # ! pause for user to read
-
-
-
-""" 
-[D] DESCRIPTION | validates the user's credentials
-[I] INPUT       | { customerID: string containing user's customerID }
-                  { password: string containing user's password }
-[R] RETURNS     | True if user's credentials are valid, else False
-[T] RETURN TYPE | boolean
-"""
-def validate_user(customerID, password):
-  # * Auth for BrightData proxy service 
-  if sys.version_info[0]==3:
-    import urllib.request
-    import random
-    username = customerID 
-    password = password
-    port = 22225
-    session_id = random.random()
-    super_proxy_url = ('http://%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
-        (username, session_id, password, port))
-
-    proxy_handler = urllib.request.ProxyHandler({
-        'http': super_proxy_url,
-        'https': super_proxy_url,
-    })
-    opener = urllib.request.build_opener(proxy_handler)
-    print('Performing request')
-    try:
-      opener.open('http://youtube.com').read()
-    except urllib.request.HTTPError as e:
-      # match e.code:
-      #   case 401:
-      #     print('blacklisted_ip')
-      #   case 407:
-      #     print('wrong_credentials')
-      print(e)
-      return False
-    global cid, psw
-    cid = customerID
-    psw = password
-    return True
 
 
 
@@ -247,7 +171,7 @@ def validate_url(answer, current):
   
   return True
   
-# - myConfig known components: zone, customer, password
+
 
 """ 
 [D] DESCRIPTION | displays the markdown file with all of the essential information
@@ -307,4 +231,4 @@ if __name__ == '__main__':
         reload = True
         temp = False
 
-  if reload: os.system('python3 ~/Develop/pythonCLI/src/cli.py')
+  if reload: os.system('python3 ~/Develop/pythonCLI/src/interface.py')
