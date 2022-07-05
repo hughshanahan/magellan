@@ -56,17 +56,19 @@ f.close()
 
 
 """ 
-[D] DESCRIPTION | requests the url and returns the response
+[D] DESCRIPTION | requests the url and prints a table of results and saves the results to a file
 [I] INPUT       | { url: string containing the url }
 """
 def requestURL(url):
   countries = []
   table = Table()
 
+
   table.add_column("Code", style="cyan", no_wrap=True)
   table.add_column("Country", style="magenta")
   table.add_column("Status", justify="right", style="blue")
   table.add_column("Description", style="red")
+
 
   for c in iso3166.countries_by_alpha2.keys():
     countries.append(c.lower())
@@ -77,7 +79,10 @@ def requestURL(url):
 
   requestTime = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
   requestPath = os.path.join('responses', requestTime)
+  analysisPath = os.path.join(requestPath, 'analysis')
+  summaryPath = os.path.join(requestPath, 'summary.txt')
   os.mkdir(requestPath)
+  os.mkdir(analysisPath)
 
   counter = 1
   with yaspin(Spinners.earth, text='Loading...', color='yellow') as spinner:
@@ -86,7 +91,7 @@ def requestURL(url):
       spinner.text = f'[{counter}/{len(countries)}]  Loading ' + c.upper() + '...'
 
       try:
-        data_dict = r.runCountry(url, c, requestPath)
+        data_dict = r.runCountry(url, c, analysisPath)
         status_code = data_dict['status_code']
         table.add_row(c.upper(), country_full, f"{status_code} ✅")
       except Exception as e:
@@ -97,7 +102,14 @@ def requestURL(url):
     spinner.stop()
 
   console.print(table)
-  input()
+  
+  with open(summaryPath, 'w') as w:
+    try:
+      w.write(print(table, file=w))
+    except TypeError as e:
+      pass
+  
+  exitPage()
 
 
 
@@ -105,7 +117,7 @@ def requestURL(url):
 [D] DESCRIPTION | displays main menu 
 [I] INPUT       | { choices: list of choices to display }
 [R] RETURNS     | user's choice
-[T] RETURN TYPE | dictionalry (e.g. "choice" : "Info")
+[T] RETURN TYPE | dictionary (e.g. "choice" : "Info")
 """
 def displayMenu(choices):
   menu = [
@@ -134,7 +146,7 @@ def displayRequest():
   requestURL(answer['url'])
 
 
-
+# TODO: add a way to display the return code of login errors
 """ 
 [D] DESCRIPTION | displays login promt to the user
 [R] RETURNS     | user's answers to the 3 queries
@@ -213,10 +225,6 @@ if __name__ == '__main__':
   reload = False
   loggedIn = ['RELOAD_FOR_DEBUG', 'Info', 'Run', 'Logout', 'Exit']
   loggedOut = ['RELOAD_FOR_DEBUG', 'Info', 'Login', 'Exit']
-
-  # os.system('clear')
-  # displayInfo()
-  # os.system('clear')
 
   while temp:
     os.system('clear')
