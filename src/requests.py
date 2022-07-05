@@ -1,11 +1,14 @@
-from datetime import datetime
 import sys
 import os
 import json
-import time
 
 
-
+'''
+[D] DESCRIPTION | runs a URL request on the parameter country and saves the response to path in json format
+[I] INPUT       | { url: string, country: string, path: string }
+[R] RETURNS     | dictionary of specific parts of the HTTP response (url, status_code, headers, text)
+[T] RETURN TYPE | dictionary
+'''
 def runCountry(url, country, path):
   url='https://youtube.com' # ! temporary
   if sys.version_info[0]==3:
@@ -42,6 +45,8 @@ def runCountry(url, country, path):
         json.dump(requestData, outfile)
 
   return requestData
+
+
 
 """ 
 [D] DESCRIPTION | validates the user's credentials
