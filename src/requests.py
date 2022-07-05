@@ -79,7 +79,7 @@ def validate_user(customerID, password):
       opener.open('http://youtube.com').read()
     except urllib.request.HTTPError as e:
       if e.code == 407:
-        text = Text('\nAuthentication failed, please try again')
+        text = Text('\n\nAuthentication failed, please try again')
         text.stylize("bold red")
         console.print(text)
         return False

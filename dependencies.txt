@@ -1,0 +1,16 @@
+iso3166==2.0.2
+getkey==0.6.5
+
+rich==12.4.4
+Pygments==2.12.0
+commonmark==0.9.1
+
+yaspin==2.1.0
+termcolor==1.1.0
+
+inquirer==2.8.0
+wcwidth==0.2.5
+blessed==1.19.1
+six==1.16.0
+python-editor==1.0.4
+readchar==2.0.1

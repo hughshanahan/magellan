@@ -154,6 +154,7 @@ def displayLogin():
       isLogedIn = True
       spinner.stop()
     else: 
+      spinner.stop()
       exitPage()
 
 
