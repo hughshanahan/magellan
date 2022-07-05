@@ -10,7 +10,6 @@ import json
 [T] RETURN TYPE | dictionary
 '''
 def runCountry(url, country, path):
-  url='https://youtube.com' # ! temporary
   if sys.version_info[0]==3:
     import urllib.request
     import random

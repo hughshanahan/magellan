@@ -1,4 +1,3 @@
-
 # * Journey
 # 1. Authentication + API Session
 # 2. User inputs URL
@@ -38,7 +37,7 @@ from rich.table import Table
 install() # implements custom traceback styling || rich.traceback
 console = Console() # creates new rich console || rich.console
 
-isLogedIn = True # global boolean to check if user is logged in
+isLogedIn = False # global boolean to check if user is logged in
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
@@ -61,9 +60,9 @@ f.close()
 """
 def requestURL(url):
   countries = []
+  
+  # Styling of summary table
   table = Table()
-
-
   table.add_column("Code", style="cyan", no_wrap=True)
   table.add_column("Country", style="magenta")
   table.add_column("Status", justify="right", style="blue")
@@ -77,6 +76,7 @@ def requestURL(url):
   if not os.path.exists('responses'):
     os.mkdir('responses')
 
+  # Creating directories for the request response files
   requestTime = datetime.now().strftime("%Y_%m_%d-%I:%M:%S_%p")
   requestPath = os.path.join('responses', requestTime)
   analysisPath = os.path.join(requestPath, 'analysis')
@@ -84,6 +84,7 @@ def requestURL(url):
   os.mkdir(requestPath)
   os.mkdir(analysisPath)
 
+  # Loop through all countries while displaying a loading spinner
   counter = 1
   with yaspin(Spinners.earth, text='Loading...', color='yellow') as spinner:
     for c in countries:
@@ -100,7 +101,6 @@ def requestURL(url):
 
       counter+=1
     spinner.stop()
-
   console.print(table)
   
   with open(summaryPath, 'w') as w:
@@ -138,7 +138,7 @@ def displayMenu(choices):
 def displayRequest():
   questions = [
     inquirer.Text('url', message="URL",
-    # validate=validate_url # ! temporary
+    validate=validate_url
     ),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
