@@ -17,11 +17,6 @@ from rich.traceback import install
 from rich.markdown import Markdown
 from rich.table import Table
 
-
-# ! Credentials for BrightData proxy service (temporary)
-# lum-customer-c_0abac4c6-zone-static
-# 2s7c5n20jxn5
-
 install() # implements custom traceback styling || rich.traceback
 console = Console() # creates new rich console || rich.console
 
