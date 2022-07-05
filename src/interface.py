@@ -146,7 +146,7 @@ def displayRequest():
   requestURL(answer['url'])
 
 
-# TODO: add a way to display the return code of login errors
+
 """ 
 [D] DESCRIPTION | displays login promt to the user
 [R] RETURNS     | user's answers to the 3 queries
@@ -162,11 +162,9 @@ def displayLogin():
   answer = inquirer.prompt(questions, theme=customInq)  
 
   if r.validate_user(answer['accountID'], answer['password']):
-    print('Logging In...')
     isLogedIn = True
   else: 
-    print('Failed to Log in')
-  input() # ! pause for user to read
+    exitPage()
 
 
 
@@ -207,8 +205,8 @@ def displayInfo():
 [D] DESCRIPTION | a widget to allow user to exit a page
 """
 def exitPage():
-  qText = Text('\n\nPress Q to return back to the Menu: ')
-  qText.stylize("bold green", 0, 9)
+  qText = Text('\n\n\nPress Q to return back to the Menu: ')
+  qText.stylize("bold blue", 0, 11)
   console.print(qText)
 
   key = ''

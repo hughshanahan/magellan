@@ -2,6 +2,10 @@ import sys
 import os
 import json
 
+from rich.text import Text
+from rich.console import Console
+
+console = Console()
 
 '''
 [D] DESCRIPTION | runs a URL request on the parameter country and saves the response to path in json format
@@ -13,8 +17,8 @@ def runCountry(url, country, path):
   if sys.version_info[0]==3:
     import urllib.request
     import random
-    username = 'lum-customer-c_0abac4c6-zone-static'
-    password = '2s7c5n20jxn5'
+    username = cid
+    password = psw
     port = 22225
     session_id = random.random()
     super_proxy_url = ('http://%s-country-%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
@@ -71,18 +75,24 @@ def validate_user(customerID, password):
         'https': super_proxy_url,
     })
     opener = urllib.request.build_opener(proxy_handler)
-    print('Performing request')
     try:
       opener.open('http://youtube.com').read()
     except urllib.request.HTTPError as e:
-      # match e.code:
-      #   case 401:
-      #     print('blacklisted_ip')
-      #   case 407:
-      #     print('wrong_credentials')
-      print(e)
-      return False
+      if e.code == 407:
+        text = Text('\nAuthentication failed, please try again')
+        text.stylize("bold red")
+        console.print(text)
+        return False
+      elif e.code == 403:
+        text = Text('\nIP has been disabled, please whitelist your IP in the brightdata.com portal')
+        text.stylize("bold yellow")
+        console.print(text)
+        return False
+      pass
+    
+    # Creating global variables storing user's credentials after confirming validity
     global cid, psw
     cid = customerID
     psw = password
+    
     return True
