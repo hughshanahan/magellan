@@ -1,14 +1,3 @@
-# * Journey
-# 1. Authentication + API Session
-# 2. User inputs URL
-# 3. Run function x on Hugh's code 
-# 4. Refactor and add more documentation
-
-# TODO: adding content to the info page
-# TODO: adding styling to the info page
-# TODO: figuring out how to resolve different error codes while logging in
-
-
 import json
 import os
 import re
@@ -21,7 +10,6 @@ import iso3166
 from getkey import getkey
 from yaspin import yaspin 
 from yaspin.spinners import Spinners
-from pyfiglet import figlet_format
 from rich import print
 from rich.console import Console
 from rich.text import Text
@@ -195,7 +183,6 @@ def validate_url(answer, current):
 [D] DESCRIPTION | displays the markdown file with all of the essential information
 """
 def displayInfo():
-  console.print(figlet_format('fair data', font = 'isometric3'), style="bold yellow")
   console.print(md)
   exitPage()
   
@@ -220,9 +207,8 @@ def exitPage():
 """
 if __name__ == '__main__':
   temp = True
-  reload = False
-  loggedIn = ['RELOAD_FOR_DEBUG', 'Info', 'Run', 'Logout', 'Exit']
-  loggedOut = ['RELOAD_FOR_DEBUG', 'Info', 'Login', 'Exit']
+  loggedIn = ['Info', 'Run', 'Logout', 'Exit']
+  loggedOut = ['Info', 'Login', 'Exit']
 
   while temp:
     os.system('clear')
@@ -241,8 +227,3 @@ if __name__ == '__main__':
         displayRequest()
       case 'Exit':
         temp = False
-      case 'RELOAD_FOR_DEBUG':
-        reload = True
-        temp = False
-
-  if reload: os.system('python3 ~/Develop/pythonCLI/src/interface.py')
