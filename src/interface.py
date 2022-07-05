@@ -149,10 +149,12 @@ def displayLogin():
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
 
-  if r.validate_user(answer['accountID'], answer['password']):
-    isLogedIn = True
-  else: 
-    exitPage()
+  with yaspin(text='Logging In...', color='yellow') as spinner:
+    if r.validate_user(answer['accountID'], answer['password']):
+      isLogedIn = True
+      spinner.stop()
+    else: 
+      exitPage()
 
 
 
