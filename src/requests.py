@@ -4,11 +4,12 @@ import json
 
 from rich.text import Text
 from rich.console import Console
+from bs4 import UnicodeDammit
 
 console = Console()
 
 '''
-[D] DESCRIPTION | runs a URL request on the parameter country and saves the response to path in json format
+[D] DESCRIPTION | runs a URL request on the parameter country and saves the response to path in JSON format
 [I] INPUT       | { url: string, country: string, path: string }
 [R] RETURNS     | dictionary of specific parts of the HTTP response (url, status_code, headers, text)
 [T] RETURN TYPE | dictionary
@@ -36,11 +37,15 @@ def runCountry(url, country, path):
     status_code = r.getcode()
     dct = dict((x, y) for x, y in header_info)
 
+    # Used to improve decoding of websites with unicode characters
+    new_doc = UnicodeDammit.detwingle(r.read()) 
+    text = new_doc.decode('utf-8')
+
     requestData = { 
         "url": r.url,
         "status_code": status_code,
         "headers": dct,
-        "text": r.read().decode('utf-8')
+        "text": text
     }
 
     countryPath = os.path.join(path, f"{country}.json")
@@ -82,12 +87,15 @@ def validate_user(customerID, password):
         text = Text('\n\nAuthentication failed, please try again')
         text.stylize("bold red")
         console.print(text)
+        print(e)
         return False
       elif e.code == 403:
         text = Text('\nIP has been disabled, please whitelist your IP in the brightdata.com portal')
         text.stylize("bold yellow")
         console.print(text)
         return False
+      else:
+        print(e.code)
       pass
     
     # Creating global variables storing user's credentials after confirming validity
