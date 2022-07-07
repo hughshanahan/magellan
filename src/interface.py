@@ -79,7 +79,7 @@ def requestURL(url):
         status_code = data_dict['status_code']
         table.add_row(c.upper(), country_full, f"{status_code} ✅")
       except Exception as e:
-        description = str(e.args[0])
+        description = str(e)
         table.add_row(c.upper(), country_full, "Failed ❌", description)
 
       counter+=1

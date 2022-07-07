@@ -87,7 +87,6 @@ def validate_user(customerID, password):
         text = Text('\n\nAuthentication failed, please try again')
         text.stylize("bold red")
         console.print(text)
-        print(e)
         return False
       elif e.code == 403:
         text = Text('\nIP has been disabled, please whitelist your IP in the brightdata.com portal')
