@@ -1,6 +1,4 @@
 import sys
-import os
-import json
 
 from rich.text import Text
 from rich.console import Console
@@ -19,8 +17,8 @@ def runCountry(url, country):
   if sys.version_info[0]==3:
     import urllib.request
     import random
-    username = "lum-customer-c_0abac4c6-zone-static"
-    password = "2s7c5n20jxn5"
+    username = cid
+    password = psw
     port = 22225
     session_id = random.random()
     super_proxy_url = ('http://%s-country-%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %

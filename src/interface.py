@@ -20,7 +20,7 @@ from rich.table import Table
 install() # implements custom traceback styling || rich.traceback
 console = Console() # creates new rich console || rich.console
 
-isLogedIn = True # global boolean to check if user is logged in
+isLogedIn = False # global boolean to check if user is logged in
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
@@ -30,7 +30,7 @@ theme_data = json.load(f)
 customInq = inquirer.themes.load_theme_from_dict(theme_data)
 
 # * Import markdown file used in displayInfo()
-file_path2 = os.path.join(script_dir, 'info.md')
+file_path2 = os.path.join('README.md')
 f = open(file_path2, 'r')
 md = Markdown(f.read())
 f.close()
@@ -73,7 +73,7 @@ def requestURL(url):
       country_full = iso3166.countries_by_alpha2[c.upper()].name
       spinner.text = f'[{counter}/{len(countries)}]  Loading ' + c.upper() + '...'
 
-      data_dict = r.runCountry(url, c, analysisPath)
+      data_dict = r.runCountry(url, c)
       status_code = data_dict['status_code']
 
       if data_dict['status_code'] == 200:
@@ -126,7 +126,7 @@ def displayMenu(choices):
 def displayRequest():
   questions = [
     inquirer.Text('url', message="URL",
-    # validate=validate_url
+    validate=validate_url
     ),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  
