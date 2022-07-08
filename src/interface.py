@@ -20,7 +20,7 @@ from rich.table import Table
 install() # implements custom traceback styling || rich.traceback
 console = Console() # creates new rich console || rich.console
 
-isLogedIn = False # global boolean to check if user is logged in
+isLogedIn = True # global boolean to check if user is logged in
 
 # * Provides styling options for the inquirer list menu
 script_dir = os.path.dirname(__file__)
@@ -51,7 +51,6 @@ def requestURL(url):
   table.add_column("Status", justify="right", style="blue")
   table.add_column("Description", style="red")
 
-
   for c in iso3166.countries_by_alpha2.keys():
     countries.append(c.lower())
   countries.sort()
@@ -74,17 +73,21 @@ def requestURL(url):
       country_full = iso3166.countries_by_alpha2[c.upper()].name
       spinner.text = f'[{counter}/{len(countries)}]  Loading ' + c.upper() + '...'
 
-      try:
-        data_dict = r.runCountry(url, c, analysisPath)
-        status_code = data_dict['status_code']
+      data_dict = r.runCountry(url, c, analysisPath)
+      status_code = data_dict['status_code']
+
+      if data_dict['status_code'] == 200:
         table.add_row(c.upper(), country_full, f"{status_code} ✅")
-      except Exception as e:
-        description = str(e)
-        table.add_row(c.upper(), country_full, "Failed ❌", description)
+      else:
+        description = data_dict['text']
+        table.add_row(c.upper(), country_full, f"{status_code} ❌", description)
+
+      countryPath = os.path.join(analysisPath, f"{country_full}.json")
+      with open(countryPath, "w") as outfile:
+        json.dump(data_dict, outfile)
 
       counter+=1
     spinner.stop()
-  console.print(table)
   
   with open(summaryPath, 'w') as w:
     try:
@@ -92,6 +95,8 @@ def requestURL(url):
     except TypeError as e:
       pass
   
+  console.print(table)
+
   exitPage()
 
 
@@ -121,7 +126,7 @@ def displayMenu(choices):
 def displayRequest():
   questions = [
     inquirer.Text('url', message="URL",
-    validate=validate_url
+    # validate=validate_url
     ),
   ]
   answer = inquirer.prompt(questions, theme=customInq)  

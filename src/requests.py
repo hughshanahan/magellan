@@ -10,16 +10,17 @@ console = Console()
 
 '''
 [D] DESCRIPTION | runs a URL request on the parameter country and saves the response to path in JSON format
-[I] INPUT       | { url: string, country: string, path: string }
+[I] INPUT       | { url: string, country: string }
 [R] RETURNS     | dictionary of specific parts of the HTTP response (url, status_code, headers, text)
 [T] RETURN TYPE | dictionary
 '''
-def runCountry(url, country, path):
+def runCountry(url, country):
+  url = 'http://youtube.com'
   if sys.version_info[0]==3:
     import urllib.request
     import random
-    username = cid
-    password = psw
+    username = "lum-customer-c_0abac4c6-zone-static"
+    password = "2s7c5n20jxn5"
     port = 22225
     session_id = random.random()
     super_proxy_url = ('http://%s-country-%s-session-%s:%s@zproxy.lum-superproxy.io:%d' %
@@ -28,31 +29,26 @@ def runCountry(url, country, path):
         'http': super_proxy_url,
         'https': super_proxy_url,
     })
-
     opener = urllib.request.build_opener(proxy_handler)
-    r = opener.open(url)
-    
-    header_info = r.getheaders()
 
-    status_code = r.getcode()
-    dct = dict((x, y) for x, y in header_info)
+    try:
+      r = opener.open(url)
+    except Exception as e:
+      headers = dict((x, y) for x, y in e.headers.items())
+      return {'url': url, 'status_code': e.code, 'headers': headers, 'text': e.reason}
 
-    # Used to improve decoding of websites with unicode characters
-    new_doc = UnicodeDammit.detwingle(r.read()) 
-    text = new_doc.decode('utf-8')
 
-    requestData = { 
+    headers = dict((x, y) for x, y in r.getheaders())
+    text = UnicodeDammit.detwingle(r.read()) # Used to improve decoding of websites with unicode characters
+
+    return { 
         "url": r.url,
-        "status_code": status_code,
-        "headers": dct,
-        "text": text
+        "status_code": r.getcode(),
+        "headers": headers,
+        "text": text.decode('utf-8')
     }
-
-    countryPath = os.path.join(path, f"{country}.json")
-    with open(countryPath, "w") as outfile:
-        json.dump(requestData, outfile)
-
-  return requestData
+  else:
+    print("Python version is not supported, please upgrade to Python 3")
 
 
 
