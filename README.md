@@ -38,4 +38,13 @@ A simple command line interface tool (CLI) which allows you to analyse the acces
 - headers -> Headers of the HTTPResponse
 - text -> HTML retreived from the url in string format
 
+## Troubleshouting
+
+> SSL Errors when requesting URL:
+You will sometimes encounter an SSL error, all that means is that you will need to install the BrightData SSL certificate. In order to do that:
+1. Go back to the page where you got your customerID and password
+2. In the top right corner you should see **"Download an SSL certificate to run secured environment"**
+3. Click on the link and download the certificate
+4. Locate the Python folder (should be titled Python {version} e.g. Python 3.10)
+5. Inside the folder locate **"InstallCertificates.command"** and click it
 &nbsp;
